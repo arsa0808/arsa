@@ -8,13 +8,10 @@ app.get('/search', async (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).json({ error: 'Query param ?q= is required' });
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
+  const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
+
   const searchUrl = `https://www.etsy.com/search?q=${encodeURIComponent(query)}`;
 
   try {
@@ -42,6 +39,7 @@ app.get('/search', async (req, res) => {
 
 app.get('/', (_, res) => res.send('Etsy scraper is live. Use /search?q=your+keyword'));
 
-app.listen(PORT, () => {
-  console.log(`✅ Server is running at http://localhost:${PORT}`);
+// ⬇️ Ovo je KLJUČNI DEO za Railway
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
