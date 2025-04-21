@@ -8,15 +8,17 @@ app.get('/search', async (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).json({ error: 'Query param ?q= is required' });
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
   const context = await browser.newContext();
   const page = await context.newPage();
-
   const searchUrl = `https://www.etsy.com/search?q=${encodeURIComponent(query)}`;
 
   try {
     await page.goto(searchUrl, { waitUntil: 'domcontentloaded' });
-
     await page.waitForSelector('[data-search-results]');
 
     const results = await page.evaluate(() => {
